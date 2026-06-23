@@ -1,0 +1,61 @@
+plugins {
+    id "com.android.application"
+}
+
+def bixStoreFile = System.getenv("BIX_STORE_FILE")
+def bixStorePassword = System.getenv("BIX_STORE_PASSWORD")
+def bixKeyAlias = System.getenv("BIX_KEY_ALIAS")
+def bixKeyPassword = System.getenv("BIX_KEY_PASSWORD")
+def hasReleaseSigning = bixStoreFile && bixStorePassword && bixKeyAlias && bixKeyPassword
+
+android {
+    namespace "com.bix.importer"
+    compileSdk 35
+    buildToolsVersion "35.0.0"
+
+    defaultConfig {
+        applicationId "com.bix.importer"
+        minSdk 26
+        targetSdk 35
+        versionCode 6
+        versionName "1.1.2"
+    }
+
+    signingConfigs {
+        release {
+            if (hasReleaseSigning) {
+                storeFile file(bixStoreFile)
+                storePassword bixStorePassword
+                keyAlias bixKeyAlias
+                keyPassword bixKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            if (hasReleaseSigning) signingConfig signingConfigs.release
+            minifyEnabled false
+        }
+    }
+
+    lint {
+        abortOnError true
+        checkReleaseBuilds true
+    }
+}
+
+android.applicationVariants.all { variant ->
+    variant.outputs.all {
+        outputFileName = "BIX.apk"
+    }
+}
+
+if (project.hasProperty("isolatedBuild")) {
+    layout.buildDirectory.set(file("${rootProject.layout.buildDirectory.get()}/app-${project.property("isolatedBuild")}"))
+}
+
+dependencies {
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "org.json:json:20240303"
+}

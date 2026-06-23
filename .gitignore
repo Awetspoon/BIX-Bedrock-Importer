@@ -1,0 +1,16 @@
+.gradle/
+.idea/
+.agents/
+build/
+app/build/
+local.properties
+*.apk
+*.aab
+*.jks
+*.keystore
+__pycache__/
+*.pyc
+artwork/launcher_icon/vke_*
+.DS_Store
+Thumbs.db
+NUL
