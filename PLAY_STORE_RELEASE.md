@@ -5,8 +5,9 @@
 - Package ID: `com.bix.importer` — treat this as permanent after the first Play upload.
 - Target SDK: 35 (Android 15).
 - Minimum SDK: 26 (Android 8).
-- No Android runtime permissions.
-- No internet permission, advertising, analytics, accounts, or tracking SDKs.
+- Minecraft compatibility: checked against the current Bedrock Android update line, including the 26.32 hotfix released on 25 June 2026. BIX reads the installed Minecraft version dynamically.
+- Android permissions: internet only, used to check GitHub Releases for app updates.
+- No advertising, analytics, accounts, or tracking SDKs.
 - Release output: Android App Bundle (`app-release.aab`).
 - Google Play App Signing is recommended; keep the upload keystore and passwords backed up securely.
 
@@ -19,17 +20,18 @@
 5. Complete App content forms: Data safety, Ads, App access, Content rating, Target audience, and Government apps where applicable.
 6. Add a support email, feature graphic, and real phone screenshots. The 512×512 Play icon is provided at `play-store/icon-512.png`.
 7. Upload the signed `BIX.aab` to Internal testing first and run the Play pre-launch report.
-8. Test behaviour pack, resource pack, combined `.mcaddon`, ZIP, unpacked folder, and world imports on more than one Android version.
+8. Test behaviour pack, resource pack, combined `.mcaddon`, ZIP, extracted folder, and world imports on more than one Android version.
 
 ## Suggested Data safety declaration
 
-BIX does not transmit data off the device or collect data for the developer. However, its core user-requested action transfers the selected prepared file directly to the separately installed Minecraft app. Google Play's guidance says direct on-device transfer to another app can count as sharing. A conservative declaration is:
+BIX does not collect data for the developer and does not upload selected add-ons, worlds, or folders. It does make a simple HTTPS request to GitHub Releases to check for app updates. Its core user-requested import action also transfers the selected prepared file directly to the separately installed Minecraft app. Google Play's guidance says direct on-device transfer to another app can count as sharing. A conservative declaration is:
 
 - Data collected: No.
 - Data shared: Files and docs.
 - Purpose: App functionality.
 - User action: The user explicitly selects the content and taps Import.
 - Retention: Android removes the temporary activity grant when Minecraft's receiving activity stack finishes. BIX deletes cached imports older than 24 hours on a later app run, and Android may clear cache sooner.
+- Update check: BIX contacts GitHub Releases over HTTPS for app version information. No selected user files are included in that request.
 
 The Play account owner remains responsible for the final declaration and should re-check it whenever app behaviour changes.
 
@@ -43,7 +45,7 @@ Short description:
 
 Full description:
 
-`BIX helps Android users prepare Minecraft Bedrock content for import. Choose a .mcpack, .mcaddon, .mcworld, ZIP, or unpacked folder. BIX validates and packages the content locally, then hands it to Minecraft using temporary read access. It supports standalone behaviour packs, standalone resource packs, combined add-ons and worlds. BIX never writes directly into Minecraft's data folders and does not use internet access, ads, analytics or tracking. Java Edition mods are detected and rejected with a clear explanation. BIX is independent and is not affiliated with Mojang Studios or Microsoft.`
+`BIX helps Android users prepare Minecraft Bedrock content for import. Choose a .mcpack, .mcaddon, .mcworld, ZIP, or extracted folder. BIX validates and packages the content locally, then hands it to Minecraft using temporary read access. It supports standalone behaviour packs, standalone resource packs, combined add-ons and worlds. BIX never writes directly into Minecraft's data folders and does not use ads, analytics or tracking. Internet access is used only to check GitHub Releases for BIX updates. Java Edition mods are detected and rejected with a clear explanation. BIX is independent and is not affiliated with Mojang Studios or Microsoft.`
 
 Suggested category: Tools.
 

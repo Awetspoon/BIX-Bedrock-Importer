@@ -30,7 +30,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.BufferedReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -44,15 +48,19 @@ public class MainActivity extends Activity {
     private static final String STATE_ADDON_URI = "addon_uri";
     private static final String STATE_ADDON_NAME = "addon_name";
     private static final String STATE_LEVEL_URI = "level_uri";
+    private static final String UPDATE_API_URL = "https://api.github.com/repos/Awetspoon/BIX-Bedrock-Importer/releases/latest";
+    private static final String RELEASES_URL = "https://github.com/Awetspoon/BIX-Bedrock-Importer/releases/latest";
     private static final long SHARED_FILE_TTL_MS = 24L * 60L * 60L * 1000L;
 
     private final ExecutorService ioExecutor = Executors.newSingleThreadExecutor();
     private TextView statusText;
+    private TextView updateText;
     private TextView addonText;
     private TextView levelText;
     private Button addonImportButton;
     private Button levelImportButton;
     private Button chooseButton;
+    private Button updateButton;
     private ProgressBar importProgress;
     private TextView progressText;
     private Uri addonUri;
@@ -68,6 +76,7 @@ public class MainActivity extends Activity {
         restoreState(state);
         updateButtons();
         checkMinecraft();
+        checkForUpdates();
         clearExpiredSharedFiles();
     }
 
@@ -102,6 +111,14 @@ public class MainActivity extends Activity {
         root.addView(subtitle);
         statusText = text("", 15, 0xFFF2F2EA, false);
         root.addView(statusText);
+
+        updateText = text("", 14, 0xFFD9B84A, true);
+        updateText.setPadding(0, dp(8), 0, dp(4));
+        updateText.setVisibility(View.GONE);
+        root.addView(updateText);
+        updateButton = button("Update from GitHub", v -> openGitHubRelease());
+        updateButton.setVisibility(View.GONE);
+        root.addView(updateButton);
 
         root.addView(note("BIX validates the content and gives Minecraft temporary read access managed by Android."));
         root.addView(section("Import into Minecraft"));
@@ -466,6 +483,63 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void checkForUpdates() {
+        ioExecutor.execute(() -> {
+            HttpURLConnection connection = null;
+            try {
+                connection = (HttpURLConnection) new URL(UPDATE_API_URL).openConnection();
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(5000);
+                connection.setRequestProperty("Accept", "application/vnd.github+json");
+                connection.setRequestProperty("User-Agent", "BIX-Android");
+                int code = connection.getResponseCode();
+                if (code < 200 || code >= 300) return;
+                String body = readFully(connection.getInputStream());
+                String latest = AppUpdateChecker.latestVersionFromGitHub(body);
+                String current = currentAppVersion();
+                if (latest != null && current != null && AppUpdateChecker.isNewerVersion(latest, current)) {
+                    runOnUiThread(() -> showUpdateAvailable(latest));
+                }
+            } catch (Exception ignored) {
+                // Update checks are helpful, not required for importing.
+            } finally {
+                if (connection != null) connection.disconnect();
+            }
+        });
+    }
+
+    private String readFully(InputStream input) throws IOException {
+        StringBuilder result = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, java.nio.charset.StandardCharsets.UTF_8))) {
+            char[] buffer = new char[2048];
+            int read;
+            while ((read = reader.read(buffer)) != -1) result.append(buffer, 0, read);
+        }
+        return result.toString();
+    }
+
+    private String currentAppVersion() {
+        try {
+            return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
+    }
+
+    private void showUpdateAvailable(String latest) {
+        updateText.setText("BIX " + latest + " is available.");
+        updateText.setVisibility(View.VISIBLE);
+        updateButton.setVisibility(View.VISIBLE);
+    }
+
+    private void openGitHubRelease() {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(RELEASES_URL)));
+        } catch (Exception e) {
+            toast("Could not open GitHub releases.");
+        }
+    }
+
     private void updateButtons() {
         addonImportButton.setEnabled(addonUri != null || levelUri != null);
     }
@@ -474,6 +548,7 @@ public class MainActivity extends Activity {
         button.setEnabled(!busy);
         button.setText(busy ? busyText : readyText);
         chooseButton.setEnabled(!busy);
+        updateButton.setEnabled(!busy);
         importProgress.setVisibility(busy ? View.VISIBLE : View.GONE);
         progressText.setText(busy
                 ? "Preparing your import…\nLarge worlds can take a few minutes. Please keep this app open."

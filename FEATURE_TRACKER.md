@@ -22,5 +22,7 @@
 | GitHub Actions APK builder | Built |
 | Play Store signing/release workflow | Built; requires developer keystore secrets |
 | Privacy policy and Play checklist | Built; contact/hosting required |
+| Latest Bedrock compatibility refresh | Built; checked against 26.32 hotfix |
+| GitHub update notice | Built |
 | Polished Material UI | Future |
 | File validation report screen | Future |

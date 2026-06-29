@@ -14,3 +14,5 @@ artwork/launcher_icon/vke_*
 .DS_Store
 Thumbs.db
 NUL
+hs_err_pid*.log
+replay_pid*.log

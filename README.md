@@ -10,6 +10,15 @@
   <a href="https://github.com/Awetspoon/BIX-Bedrock-Importer/releases/latest"><strong>Download the latest BIX APK</strong></a>
 </p>
 
+## Download and install
+
+1. Open the [latest BIX release](https://github.com/Awetspoon/BIX-Bedrock-Importer/releases/latest) on your Android phone.
+2. Download `BIX.apk`.
+3. Open the downloaded APK and allow install from your browser or file manager if Android asks.
+4. Open BIX, choose your Bedrock file, ZIP, or extracted folder, then tap **Import with Minecraft**.
+
+After BIX `1.1.4`, the app can also tell you when a newer GitHub release is available and open the download page for you.
+
 ## What BIX does
 
 BIX is made for Minecraft Bedrock / Pocket Edition on Android.
@@ -17,6 +26,8 @@ BIX is made for Minecraft Bedrock / Pocket Edition on Android.
 It checks the Bedrock content you choose, prepares it when needed, then opens Minecraft so Minecraft can perform the final import.
 
 For most downloads, choose **File / ZIP**. Choose **Extracted Folder** only when you already unzipped the add-on or world and can see `manifest.json` or `level.dat` inside.
+
+This build has been checked against the current Bedrock Android update line, including the 26.32 hotfix released on 25 June 2026. BIX reads your installed Minecraft version from Android, so it is not tied to one hardcoded Minecraft version.
 
 ## Features
 
@@ -27,6 +38,7 @@ For most downloads, choose **File / ZIP**. Choose **Extracted Folder** only when
 - Import world folders as `.mcworld`
 - Reject Java Edition content with a clear message
 - Import without changing Minecraft to External storage mode
+- Check GitHub Releases for BIX updates and open the latest release page
 
 ## Safe by design
 
@@ -34,17 +46,13 @@ BIX does not write into Minecraft's data, global resource, pack, or world folder
 
 Selected files are processed locally on your device. BIX gives Minecraft temporary read access only when you tap **Import with Minecraft**.
 
+BIX uses internet access only to check whether a newer GitHub Release is available. It does not upload your selected add-ons, worlds, or folders.
+
 ## Not supported
 
 Java Edition mods are not compatible with Minecraft Bedrock on Android. Files such as `.jar`, `pack.mcmeta`, `assets`, `data`, `META-INF`, or `net` are usually Java Edition content.
 
-## Download
-
-Go to [GitHub Releases](https://github.com/Awetspoon/BIX-Bedrock-Importer/releases/latest), download `BIX.apk`, then install it on your Android phone.
-
-If Android warns you about installing from your browser or file manager, allow that source only if you trust this download.
-
-## Build APK On Laptop
+## Build APK on a laptop
 
 For developers, open the repo in Android Studio, wait for Gradle sync, then use:
 
